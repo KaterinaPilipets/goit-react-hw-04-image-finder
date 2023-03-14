@@ -21,7 +21,7 @@ export class ImageGallery extends Component {
     const curentSearchValue = this.props.searchValue.trim();
 
     if (
-      (prevSearchValue !== curentSearchValue && this.startSearch()) ||
+      prevSearchValue !== curentSearchValue ||
       prevState.page !== this.state.page
     ) {
       this.setState({ status: 'pending' });
@@ -40,14 +40,14 @@ export class ImageGallery extends Component {
         });
     }
   }
-  startSearch = searchValue => {
-    this.setState({
-      page: 1,
-      images: [],
-      maxPage: 1,
-      modalImg: '',
-    });
-  };
+  // startSearch = searchValue => {
+  //   this.setState({
+  //     page: 1,
+  //     images: [],
+  //     maxPage: 1,
+  //     modalImg: '',
+  //   });
+  // };
   loadNextPage = () => {
     this.setState(({ page }) => ({ page: page + 1 }));
   };
