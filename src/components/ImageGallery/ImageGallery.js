@@ -94,20 +94,3 @@ export class ImageGallery extends Component {
 ImageGallery.propTypes = {
   searchValue: PropTypes.string.isRequired,
 };
-//   render() {
-//     const { images } = this.state;
-//     return (
-//       <div>
-//         <ul className="gallery">
-//           {images.map(({ id, webformatURL }, index) => (
-//             <ImageGalleryItem
-//               key={id}
-//               onClick={() => this.handleClickImg(index)}
-//               webformatURL={webformatURL}
-//             />
-//           ))}
-//         </ul>
-//       </div>
-//     );
-//   }
-// }

@@ -1,8 +1,8 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Backdrop, Window } from './Modal.styled';
-import { createPortal } from 'react-dom';
-const modalRoot = document.querySelector('#modal-root');
+// import { createPortal } from 'react-dom';
+// const modalRoot = document.querySelector('#modal-root');
 export class Modal extends Component {
   componentDidMount() {
     window.addEventListener('keydown', this.handleKeyDown);
@@ -23,11 +23,10 @@ export class Modal extends Component {
     }
   };
   render() {
-    return createPortal(
+    return (
       <Backdrop onClick={this.handleBackdropClick}>
         <Window>{this.props.children}</Window>
-      </Backdrop>,
-      modalRoot
+      </Backdrop>
     );
   }
 }
