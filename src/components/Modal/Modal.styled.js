@@ -14,6 +14,6 @@ export const Backdrop = styled.div`
 `;
 
 export const Window = styled.div`
-  max-width: calc(100vw - 48px);
-  max-height: calc(100vh - 48px);
+  max-width: calc(100vw * 0, 95);
+  max-height: calc(100vh * 0, 95);
 `;
