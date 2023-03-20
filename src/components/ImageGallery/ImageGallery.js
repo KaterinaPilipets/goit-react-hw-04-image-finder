@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { fetchGallery, PER_PAGE } from 'api/fetch';
 import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
@@ -6,90 +6,65 @@ import { List } from './ImageGallery.styled';
 import { Loader } from 'components/Loader/Loader';
 import { Button } from 'components/Button/Button';
 import { Modal } from 'components/Modal/Modal';
-export class ImageGallery extends Component {
-  state = {
-    images: [],
+export const ImageGallery = searchValue => {
+  console.log(searchValue);
+  const [images, setImages] = useState([]);
+  const [status, setStatus] = useState('idle');
+  const [page, setPage] = useState(1);
+  const [maxPage, setMaxPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
+  const [modalImg, setModalImg] = useState('');
+  useEffect(() => {
+    setStatus('idle');
+    setPage(1);
+  }, [searchValue]);
+  useEffect(() => {
+    setStatus('pending');
+    fetchGallery(searchValue, page)
+      .then(resp => {
+        setMaxPage(resp.totalHits / PER_PAGE);
+        setStatus('resolved');
+        setImages(prevState => [...prevState, ...resp.hits]);
+      })
+      .catch(error => {
+        console.log('error :>> ', error);
+        setStatus('rejected');
+      });
+  }, [searchValue, page]);
 
-    status: 'idle',
-    page: 10,
-    maxPage: 1,
-    showModal: false,
-    modalImg: '',
+  const loadNextPage = () => {
+    setPage(prevState => prevState + 1);
   };
-  componentDidUpdate(prevProps, prevState) {
-    const prevSearchValue = prevProps.searchValue.trim();
-    const curentSearchValue = this.props.searchValue.trim();
-
-    if (
-      prevSearchValue !== curentSearchValue ||
-      prevState.page !== this.state.page
-    ) {
-      this.setState({ status: 'pending' });
-
-      fetchGallery(curentSearchValue, this.state.page)
-        .then(resp => {
-          this.setState({
-            images: [...this.state.images, ...resp.hits],
-            status: 'resolved',
-            maxPage: resp.totalHits / PER_PAGE,
-          });
-        })
-        .catch(error => {
-          console.log('error :>> ', error);
-          this.setState({ status: 'rejected' });
-        });
-    }
-  }
-  // startSearch = searchValue => {
-  //   this.setState({
-  //     page: 1,
-  //     images: [],
-  //     maxPage: 1,
-  //     modalImg: '',
-  //   });
-  // };
-  loadNextPage = () => {
-    this.setState(({ page }) => ({ page: page + 1 }));
+  const handleClickImg = index => {
+    setModalImg(index);
   };
-  handleClickImg = index => {
-    this.setState({
-      showModal: true,
-      modalImg: index,
-    });
-  };
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  const toggleModal = () => {
+    setShowModal(prevState => !prevState);
   };
 
-  render() {
-    const { status, images, page, maxPage, showModal, modalImg } = this.state;
+  return (
+    <div>
+      {showModal && (
+        <Modal onClose={toggleModal}>
+          <img src={images[modalImg].largeImageURL} alt=""></img>
+        </Modal>
+      )}
 
-    if (status === 'pending') return <Loader />;
-    if (status === 'resolved') {
-      return (
-        <div>
-          {showModal && (
-            <Modal onClose={this.toggleModal}>
-              <img src={images[modalImg].largeImageURL} alt=""></img>
-            </Modal>
-          )}
-          <List>
-            {images.map(({ id, webformatURL }, index) => (
-              <ImageGalleryItem
-                key={id}
-                onClick={() => this.handleClickImg(index)}
-                webformatURL={webformatURL}
-              />
-            ))}
-          </List>
-          {page < maxPage && (
-            <Button onClick={this.loadNextPage}>Load more</Button>
-          )}
-        </div>
-      );
-    }
-  }
-}
+      <List>
+        {images.map(({ id, webformatURL }, index) => (
+          <ImageGalleryItem
+            key={id}
+            onClick={() => handleClickImg(index)}
+            webformatURL={webformatURL}
+          />
+        ))}
+      </List>
+      {status === 'pending' && <Loader />}
+      {page < maxPage && <Button onClick={loadNextPage}>Load more</Button>}
+    </div>
+  );
+  // }
+};
 
 ImageGallery.propTypes = {
   searchValue: PropTypes.string.isRequired,
