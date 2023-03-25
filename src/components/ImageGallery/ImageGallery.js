@@ -12,7 +12,7 @@ export const ImageGallery = ({ searchValue }) => {
   const [page, setPage] = useState(1);
   const [maxPage, setMaxPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
-  const [modalImg, setModalImg] = useState('');
+  const [modalImg, setModalImg] = useState(1);
   const [value, setValue] = useState('');
   useEffect(() => {
     if (searchValue) {
@@ -43,6 +43,7 @@ export const ImageGallery = ({ searchValue }) => {
     setPage(prevState => prevState + 1);
   };
   const handleClickImg = index => {
+    setShowModal(true);
     setModalImg(index);
   };
   const toggleModal = () => {
